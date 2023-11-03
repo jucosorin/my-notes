@@ -5,7 +5,7 @@ node -e "fs.writeFileSync('package.json', '{}')"
 ```
 Install Antora locally
 ```shell
-npm i -D -E @antora/cli@3.1 @antora/site-generator@3.1
+npm i -D -E @antora/cli@3.1 @antora/site-generator@3.1 @antora/lunr-extension
 ```
 Check Antora version
 ```shell
