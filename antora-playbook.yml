@@ -1,11 +1,11 @@
 site:
   title: My Notes
   # the 404 page and sitemap files only get generated when the url property is set
-  url: https://jucosorin.my-notes/
+  url: https://jucosorin.github.io/my-notes/
   start_page: lxd::index.adoc
 content:
   sources:
-    - url: https://jucosorin.my-notes.git
+    - url: https://github.com/jucosorin/my-notes.git
       start_path: docs/lxd
       branches: main
 asciidoc:
