@@ -4,8 +4,25 @@
 
 LXD is a modern, secure and powerful system container and virtual machine manager.
 
-.Check if LXD is installed
+.Check if LXD is installed on the linux host
 [,console]
 ----
 $ snap info lxd
+----
+
+.Install LXD client name *_lxc_* on the client machine (macOS)
+[,console]
+----
+$ brew install lxc
+----
+.Install LXD client name *_lxc_* on the client machine (Ubuntu linux)
+[,console]
+----
+$ sudo apt install lxc
+----
+
+.Launch a container named *_alpine_* with an Alpine Edge image
+[,console]
+----
+$ lxc launch images:alpine/edge alpine
 ----

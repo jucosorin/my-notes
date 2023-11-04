@@ -1,7 +1,6 @@
 antora:
   extensions:
     - require: '@antora/lunr-extension'
-
 site:
   title: My Notes
   # the 404 page and sitemap files only get generated when the url property is set
@@ -11,6 +10,9 @@ content:
   sources:
     - url: https://github.com/jucosorin/my-notes.git
       start_path: docs/lxd
+      branches: main
+    - url: https://github.com/jucosorin/my-notes.git
+      start_path: docs/juju
       branches: main
 asciidoc:
   attributes:

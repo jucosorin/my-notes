@@ -1,0 +1,31 @@
+= Juju
+:example-caption!:
+:source-highlighter: highlight.js
+
+Juju is an open source orchestration engine for software operators that enables the deployment, integration and lifecycle management of applications at any scale, on any infrastructure, using special software operators called ‘charms’.
+
+.Install Juju on the client machine (macOS)
+[,console]
+----
+$ brew install juju 
+----
+
+.Install Juju on the client machine (Ubuntu linux)
+[,console]
+----
+$ sudo snap install juju --classic
+----
+
+.Check Juju version
+[,console]
+----
+$ juju version
+----
+
+Juju automatically discovers local clouds like LXD and k8s clouds from the _.kube/config_ . 
+
+.List the cloudd that are currenty available on the clinet machine
+[,console]
+----
+$ juju clouds
+----

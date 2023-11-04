@@ -1,0 +1,139 @@
+= Deploy MicroK8S cluster using a charm
+:example-caption!:
+:source-highlighter: highlight.js
+
+We will deploy a MicroK8S cluster on the local LXD cluster. The cluster should be accessible from the host machine.
+
+=== Adding the cloud
+
+First, we need to add the LXD cloud to Juju:
+
+[source,console]
+----
+$ juju add-cloud
+----
+
+[source]
+.Example output from the above command
+--
+Cloud Types
+
+  lxd
+  maas
+  manual
+  openstack
+  vsphere
+
+Select cloud type: lxd
+
+Enter a name for your lxd cloud: lxd-remote
+
+Enter the API endpoint url for the remote LXD server: https://10.10.0.1:8443
+Auth Types
+  certificate
+
+Enter region [default]: 
+
+Enter the API endpoint url for the region [use cloud api url]: 
+
+Enter another region? (y/N): n
+
+Cloud "lxd-remote" successfully added
+
+You will need to add credentials for this cloud (`juju add-credential lxd-remote`)
+before creating a controller (`juju bootstrap lxd-remote`)
+--
+
+To add the remote LXD information to Juju, run juju add-credential without arguments and follow the prompts:
+
+[source,console]
+----
+$ juju add-credential lxd-remote
+----
+
+[source]
+.Example output from the above command
+--
+Enter credential name: lxd-remote-creds
+
+Auth Types
+  certificate
+  interactive
+
+Select auth type [interactive]: 
+
+Enter trust-password: *******
+
+Loaded client cert/key from "/home/ubuntu/.local/share/juju/lxd"
+Uploaded certificate to LXD server.
+
+Credential "lxd-remote-creds" added locally for cloud "lxd-remote".
+--
+
+=== Add a controller
+
+Now we can bootstrap a controller on the LXD cloud:
+
+[source,console]
+----
+$ juju bootstrap --constraints arch=arm64 lxd-remote lxd-remote-controller
+----
+
+=== Add a model
+
+[source,console]
+----
+$ juju add-model k8s-cluster
+----
+
+=== Use the charm to deploy a one node microk8s cluster
+
+[source,console]
+----
+$ juju deploy microk8s --channel 1.28/edge --constraints arch=arm64 -n 1
+----
+
+Use the status command to check on the command completion
+
+[source,console]
+----
+$ juju status --watch 1s
+----
+
+Make sure we can reach the microk8s cluster with a kubeconfig
+
+[source,console]
+----
+$ juju expose microk8s
+----
+
+Deploy an additional two worker nodes to the cluster
+
+[source,console]
+----
+$ juju deploy microk8s microk8s-worker --channel 1.28/edge --constraints arch=arm64 --config role=worker -n 2
+----
+
+When deploying with role=worker, the charm will stay in a waiting state until it is related to a control plane. To proceed, integrate microk8s-worker with microk8s, so that the nodes can join the cluster:
+
+[source,console]
+----
+$ juju integrate microk8s:workers microk8s-worker:control-plane
+----
+
+Verify the status of the k8s cluster using *_kubectl get nodes_*
+
+[source,console]
+----
+$ juju exec --unit microk8s/leader -- microk8s kubectl get node
+----
+
+WARNING: Do not forget to make static the IP addresses of the LXD machines, otherwise the cluster will not be reachable after a reboot.  
+
+=== Get the cluster configuration
+
+
+[source,console]
+----
+$ juju exec --unit microk8s/leader -- microk8s config > ~/.kube/config
+----
