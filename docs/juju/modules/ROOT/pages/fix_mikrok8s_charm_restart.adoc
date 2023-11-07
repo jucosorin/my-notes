@@ -1,0 +1,95 @@
+= Fix microk8s application deployed through the 
+MicroK8s juju charm after a host or lxd machine reboot
+:example-caption!:
+:source-highlighter: highlight.js
+
+After a host machine or lxd machine restart check the status of the microk8s application by running the following command:
+
+[source,console]
+----
+$ juju status
+----
+
+If the status looks like the following:
+
+[source]
+.Example output from a failed microk8s application
+--
+Model        Controller  Cloud/Region         Version  SLA          Timestamp
+k8s-cluster  microcloud  rpi-cluster/default  3.2.3    unsupported  20:06:28+02:00
+
+App              Version  Status  Scale  Charm     Channel    Rev  Exposed  Message
+microk8s         1.28.2   error       1  microk8s  1.28/edge  217  yes      hook failed: "config-changed"
+microk8s-worker  1.28.2   error       2  microk8s  1.28/edge  217  no       hook failed: "update-status"
+
+Unit                Workload  Agent  Machine  Public address                          Ports      Message
+microk8s-worker/0   error     idle   1        fdc2:82ea:298c:4ac9:216:3eff:fe6d:2903             hook failed: "update-status"
+microk8s-worker/1*  error     idle   2        fdc2:82ea:298c:4ac9:216:3eff:fee9:6c0e             hook failed: "update-status"
+microk8s/0*         error     idle   0        192.168.88.41                           16443/tcp  hook failed: "config-changed"
+
+Machine  State    Address                                 Inst id        Base          AZ  Message
+0        started  192.168.88.41                           juju-e8f027-0  ubuntu@22.04      Running
+1        started  fdc2:82ea:298c:4ac9:216:3eff:fe6d:2903  juju-e8f027-1  ubuntu@22.04      Running
+2        started  fdc2:82ea:298c:4ac9:216:3eff:fee9:6c0e  juju-e8f027-2  ubuntu@22.04      Running
+--
+
+Then the microk8s application is in a failed state. 
+
+Ssh to each unit in the cluster by running the following command:
+
+[source,console]
+----
+$ juju ssh microk8s/<unit-id>
+----
+
+or 
+
+[source,console]
+----
+$ juju ssh microk8s-worker/<unit-id>
+----
+
+While logged into the unit, run the following command to get the status of the microk8s application:
+
+[source,console]
+----
+$ sudo microk8s status
+----
+
+If the status looks like the following:
+
+[source]
+.Example output from a failed microk8s application
+--
+missing profile snap.microk8s.microk8s.
+Please make sure that the snapd.apparmor service is enabled and started
+--
+
+Issue the following command to enable and start the snapd.apparmor service:
+
+[source,console]
+----
+$ sudo apparmor_parser --add /var/lib/snapd/apparmor/profiles/snap.microk8s.*
+----
+
+Then run the following command to restart the microk8s application:
+
+[source,console]
+----
+$ sudo microk8s stop
+$ sudo microk8s start
+----
+
+In order to fix the failed hooks restart the individual units (LXD in our case) by running the following command:
+
+[source,console]
+----
+$ lxd restart <instance-name>
+----
+
+Finally, mark unit errors as resolved by running the following command: 
+
+[source,console]
+----
+$ juju resolve --all
+----

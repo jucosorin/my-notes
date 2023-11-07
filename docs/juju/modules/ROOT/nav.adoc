@@ -1,1 +1,3 @@
+* xref:index.adoc[]
 * xref:juju:ROOT:mikrok8s_charm.adoc[]
+* xref:juju:ROOT:fix_mikrok8s_charm_restart.adoc[]

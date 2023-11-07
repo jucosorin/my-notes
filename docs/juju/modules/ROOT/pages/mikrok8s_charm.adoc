@@ -132,8 +132,11 @@ WARNING: Do not forget to make static the IP addresses of the LXD machines, othe
 
 === Get the cluster configuration
 
-
 [source,console]
 ----
 $ juju exec --unit microk8s/leader -- microk8s config > ~/.kube/config
 ----
+
+=== Enable the metrics server
+
+First, log into the 
