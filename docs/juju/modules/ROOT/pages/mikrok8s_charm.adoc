@@ -4,7 +4,7 @@
 
 We will deploy a MicroK8S cluster on the local LXD cluster. The cluster should be accessible from the host machine.
 
-=== Adding the cloud
+== Adding the cloud
 
 First, we need to add the LXD cloud to Juju:
 
@@ -70,7 +70,7 @@ Uploaded certificate to LXD server.
 Credential "lxd-remote-creds" added locally for cloud "lxd-remote".
 --
 
-=== Add a controller
+== Add a controller
 
 Now we can bootstrap a controller on the LXD cloud:
 
@@ -79,14 +79,14 @@ Now we can bootstrap a controller on the LXD cloud:
 $ juju bootstrap --constraints arch=arm64 lxd-remote lxd-remote-controller
 ----
 
-=== Add a model
+== Add a model
 
 [source,console]
 ----
 $ juju add-model k8s-cluster
 ----
 
-=== Use the charm to deploy a one node microk8s cluster
+== Use the charm to deploy a one node microk8s cluster
 
 [source,console]
 ----
@@ -130,7 +130,7 @@ $ juju exec --unit microk8s/leader -- microk8s kubectl get node
 
 WARNING: Do not forget to make static the IP addresses of the LXD machines, otherwise the cluster will not be reachable after a reboot.  
 
-=== Get the cluster configuration
+== Get the cluster configuration
 
 [source,console]
 ----

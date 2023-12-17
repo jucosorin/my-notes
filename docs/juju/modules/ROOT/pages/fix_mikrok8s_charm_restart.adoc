@@ -94,7 +94,7 @@ Finally, mark unit errors as resolved by running the following command:
 $ juju resolve --all
 ----
 
-=== Make the solution permanent
+== Make the solution permanent
 
 The easiest solution is to copy AppArmor profiles to the host operating system.
 
