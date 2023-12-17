@@ -1,5 +1,4 @@
-= Fix microk8s application deployed through the 
-MicroK8s juju charm after a host or lxd machine reboot
+= Fix microk8s application deployed through the MicroK8s juju charm after a host or lxd machine reboot
 :example-caption!:
 :source-highlighter: highlight.js
 
