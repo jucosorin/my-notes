@@ -1,4 +1,5 @@
-= Fix microk8s application deployed through the MicroK8s juju charm after a host or lxd machine reboot
+= Fix microk8s not staring because of missing AppArmor profiles
+:hide-uri-scheme:
 :example-caption!:
 :source-highlighter: highlight.js
 
@@ -92,3 +93,62 @@ Finally, mark unit errors as resolved by running the following command:
 ----
 $ juju resolve --all
 ----
+
+=== Make the solution permanent
+
+The easiest solution is to copy AppArmor profiles to the host operating system.
+
+Run the following commands from the MacOS lxc client.
+
+First run *juju status* and get the name of lxc machine that is runnning a kubernetes worker node. For instance _juju-e8f027-1_ . Create a temporary directory inside this node.
+
+[source,console]
+----
+$ lxc exec juju-e8f027-1 -- mkdir /tmp/microk8s
+----
+
+Copy microk8s AppArmor profiles in this folder.
+
+[source,console]
+----
+$ lxc exec juju-e8f027-1 -- find /var/lib/snapd/apparmor/profiles/ -name "snap.microk8s.*" -exec cp {} /tmp/microk8s/ \;
+----
+
+List files inside the guest operating system.
+
+[source,console]
+----
+$ lxc exec juju-e8f027-1 -- ls /tmp/microk8s
+----
+
+Next log into each LXD machine in the LXD cluster and run the following commands.
+
+[source,console]
+----
+$ sudo lxc file pull -r juju-e8f027-1/tmp/microk8s /etc/apparmor.d/
+----
+
+List files copied to the host operating system.
+
+[source,console]
+----
+$ ls /etc/apparmor.d/microk8s/
+----
+
+Read microk8s AppArmor profiles inside the host operating system.
+
+[source,console]
+----
+$ sudo apparmor_parser --replace /etc/apparmor.d/microk8s/
+----
+
+Check AppArmor status to see that the profiles have been loaded.
+
+[source,console]
+----
+$ sudo aa-status
+----
+
+These profiles will be read automatically after the host operating system reboots.
+
+NOTE: Solution taken from https://sleeplessbeastie.eu/2020/07/20/how-to-deal-with-missing-apparmor-profiles-for-microk8s-on-lxd/
