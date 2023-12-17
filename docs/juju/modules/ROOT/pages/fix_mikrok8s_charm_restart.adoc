@@ -65,6 +65,8 @@ missing profile snap.microk8s.microk8s.
 Please make sure that the snapd.apparmor service is enabled and started
 --
 
+== Quick fix
+
 Issue the following command to enable and start the snapd.apparmor service:
 
 [source,console]
